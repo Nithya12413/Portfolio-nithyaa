@@ -1,0 +1,18 @@
+/* Subtle ambient glow that follows cursor */
+.cursor-glow {
+  position: fixed;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(94, 234, 212, 0.08) 0%, transparent 70%);
+  mix-blend-mode: screen;
+}
+
+@media only screen and (max-width: 600px) {
+  .cursor-glow {
+    display: none;
+  }
+}
