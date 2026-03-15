@@ -6,8 +6,22 @@ import "./styles/SocialIcons.css";
 import { TbNotes } from "react-icons/tb";
 import { useEffect } from "react";
 import HoverLinks from "./HoverLinks";
+import emailjs from "@emailjs/browser";
 
 const SocialIcons = () => {
+  const handleDownload = () => {
+    // Send notification that resume was downloaded
+    emailjs.send(
+      "service_2d1bklo",
+      "template_5xs4y1n",
+      {
+        from_name: "Portfolio System",
+        reply_to: "nithyaa.inbox@gmail.com",
+        message: "Someone just clicked/downloaded your resume from your portfolio site!",
+      },
+      "2__8nvUdTDIOGhKwP"
+    );
+  };
   useEffect(() => {
     const social = document.getElementById("social") as HTMLElement;
 
@@ -15,15 +29,18 @@ const SocialIcons = () => {
       const elem = item as HTMLElement;
       const link = elem.querySelector("a") as HTMLElement;
 
-      const rect = elem.getBoundingClientRect();
-      let mouseX = rect.width / 2;
-      let mouseY = rect.height / 2;
-      let currentX = 0;
-      let currentY = 0;
+      let rect = elem.getBoundingClientRect();
+      const midX = rect.width / 2;
+      const midY = rect.height / 2;
+      
+      let mouseX = midX;
+      let mouseY = midY;
+      let currentX = midX;
+      let currentY = midY;
 
       const updatePosition = () => {
-        currentX += (mouseX - currentX) * 0.1;
-        currentY += (mouseY - currentY) * 0.1;
+        currentX += (mouseX - currentX) * 0.15;
+        currentY += (mouseY - currentY) * 0.15;
 
         link.style.setProperty("--siLeft", `${currentX}px`);
         link.style.setProperty("--siTop", `${currentY}px`);
@@ -32,19 +49,25 @@ const SocialIcons = () => {
       };
 
       const onMouseMove = (e: MouseEvent) => {
+        rect = elem.getBoundingClientRect(); // Update in case of scroll/resize
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        if (x < 40 && x > 10 && y < 40 && y > 5) {
+        // Follow mouse if within reasonable distance of the icon
+        if (x >= -20 && x <= rect.width + 20 && y >= -20 && y <= rect.height + 20) {
           mouseX = x;
           mouseY = y;
         } else {
-          mouseX = rect.width / 2;
-          mouseY = rect.height / 2;
+          mouseX = midX;
+          mouseY = midY;
         }
       };
 
-      document.addEventListener("mousemove", onMouseMove);
+      elem.addEventListener("mousemove", onMouseMove);
+      elem.addEventListener("mouseleave", () => {
+        mouseX = midX;
+        mouseY = midY;
+      });
 
       updatePosition();
 
@@ -68,7 +91,12 @@ const SocialIcons = () => {
           </a>
         </span>
       </div>
-      <a className="resume-button" href="/nithya_resume.pdf" download="Nithya_S_S_Resume.pdf">
+      <a 
+        className="resume-button" 
+        href="/nithya_resume.pdf" 
+        download="Nithya_S_S_Resume.pdf"
+        onClick={handleDownload}
+      >
         <HoverLinks text="RESUME" />
         <span>
           <TbNotes />

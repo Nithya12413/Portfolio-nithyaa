@@ -1,13 +1,43 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdArrowOutward, MdCopyright } from "react-icons/md";
 import "./styles/Contact.css";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import emailjs from "@emailjs/browser";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Contact = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [isSending, setIsSending] = useState(false);
+
+  const sendEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formRef.current) return;
+
+    setIsSending(true);
+
+    emailjs
+      .sendForm(
+        "service_2d1bklo",
+        "template_5xs4y1n",
+        formRef.current,
+        "2__8nvUdTDIOGhKwP"
+      )
+      .then(
+        () => {
+          alert("Message sent successfully! I will get back to you soon.");
+          formRef.current?.reset();
+          setIsSending(false);
+        },
+        (error) => {
+          console.error("EmailJS Error:", error);
+          alert("Failed to send message. Please try again or email me directly.");
+          setIsSending(false);
+        }
+      );
+  };
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -130,11 +160,13 @@ const Contact = () => {
 
           <div className="contact-box contact-right">
             <h4 style={{ marginBottom: "10px" }}>Send a Message</h4>
-            <form className="contact-form" onSubmit={(e) => { e.preventDefault(); alert("Message sent!"); }}>
-              <input type="text" placeholder="Your Name" required data-cursor="disable" />
-              <input type="email" placeholder="Your Email" required data-cursor="disable" />
-              <textarea placeholder="Your Message" rows={5} required data-cursor="disable"></textarea>
-              <button type="submit" data-cursor="disable">Send Message</button>
+            <form className="contact-form" ref={formRef} onSubmit={sendEmail}>
+              <input type="text" name="from_name" placeholder="Your Name" required data-cursor="disable" />
+              <input type="email" name="reply_to" placeholder="Your Email" required data-cursor="disable" />
+              <textarea name="message" placeholder="Your Message" rows={5} required data-cursor="disable"></textarea>
+              <button type="submit" disabled={isSending} data-cursor="disable">
+                {isSending ? "Sending..." : "Send Message"}
+              </button>
             </form>
           </div>
         </div>
