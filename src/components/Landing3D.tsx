@@ -124,7 +124,7 @@ function Moon() {
     return texture;
   }, []);
 
-  useFrame((state) => {
+  useFrame(() => {
     if (meshRef.current) {
       const baseSpeed = hovered ? 0.8 : 0.05;
       meshRef.current.rotation.y += baseSpeed * 0.016;
